@@ -3,6 +3,7 @@
 <프론트엔드>
 멤버 : 김희환, 정이균
 사용 언어 : JavaScript, Veu.js
+
 <백엔드>
 멤버 : 강재일, 구교민
 사용 언어: Python, Django
