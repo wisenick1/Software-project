@@ -286,32 +286,38 @@
           </div>
         </div>
       </div>
-    </div>
-    <div class="button">
+      <div class="text-center py-3">
+        <button id="sendButton" class="btn btn-primary">확인</button>
+      </div>
     </div>
   </div>
 
   <script>
-  const checkboxButtons = document.querySelectorAll('.btn-checkbox');
+  const checkboxButtons = document.querySelectorAll('.btn');
+  const selectedButtons = [];
 
   checkboxButtons.forEach(button => {
     button.addEventListener('click', function() {
-      const isSelected = button.getAttribute('data-selected') === 'true';
-
-      if (isSelected) {
-        button.setAttribute('data-selected', 'false');
-        button.classList.remove('btn-secondary');
-        button.classList.add('btn-outline-secondary');
-      } else {
-        button.setAttribute('data-selected', 'true');
-        button.classList.remove('btn-outline-secondary');
+      const index = selectedButtons.indexOf(button);
+      if (index === -1) {
+        selectedButtons.push(button);
+        button.classList.remove('btn-outline-secondary', 'text-light');
         button.classList.add('btn-secondary');
+      } else {
+        selectedButtons.splice(index, 1);
+        button.classList.remove('btn-secondary');
+        button.classList.add('btn-outline-secondary', 'text-light');
       }
-      const selectedButtons = Array.from(checkboxButtons).filter(btn => btn.getAttribute('data-selected') === 'true');
-      const selectedButtonIds = selectedButtons.map(btn => btn.textContent);
     });
   });
 
+  const sendButton = document.getElementById('sendButton');
+  sendButton.addEventListener('click', function() {
+    const selectedButtonNames = selectedButtons.map(button => button.textContent);
+
+    // 선택된 버튼 정보를 서버로 전송하는 로직 추가
+    console.log('선택된 버튼 정보:', selectedButtonNames);
+  });
   </script>
 
 </main>
