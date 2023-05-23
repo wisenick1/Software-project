@@ -1,7 +1,7 @@
 body {
   background-image: linear-gradient(rgba(0, 0, 0, 0.262), rgba(0, 0, 0, 0.344)),
     url(images/loginback.JPG);
-  height: 100vh;
+  height: 120vh;
 }
 
 .login-top {
@@ -18,17 +18,15 @@ body {
 }
 
 .background-banner {
-  background-image: linear-gradient(
+  	background-image: linear-gradient(
       45deg,
       rgb(51 43 43 / 75%),
       rgb(20 19 20 / 61%)
-    ),
-    url(images/loginback.JPG);
-
-  height: 100vh;
-  background-color: transparent;
-  background-repeat: no-repeat;
-  background-attachment: fixed;
+    ), url(images/loginback.JPG);
+	height: 100%;
+	background-color: transparent;
+  	background-repeat: no-repeat;
+  	background-attachment: scroll;
 }
 
 .home-content {
@@ -68,7 +66,7 @@ body {
 	position: relative;
 	z-index: 2;
 	width: 450px;
-	height: 550px;
+	height: 100%;
 	background: rgb(0, 0, 0, 0.65);
 	margin: 0 auto;
 	display: flex;
@@ -83,7 +81,7 @@ body {
 	position: relative;
 	z-index: 2;
 	width: 450px;
-	height: 550px;
+	height: 100%;
 	background: rgb(0, 0, 0, 0.65);
 	margin: 0 auto;
 	display: flex;

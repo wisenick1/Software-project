@@ -28,10 +28,12 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 # 추가
-LOGIN_REDIRECT_URL = '/sgv/'
+LOGIN_REDIRECT_URL = '/sgv/preference/'
 
 # 로그아웃시 이동하는 URL
 LOGOUT_REDIRECT_URL = '/sgv/'
+
+AUTH_USER_MODEL = 'common.CustomUser'
 
 # Application definition
 
@@ -45,6 +47,7 @@ INSTALLED_APPS = [
 
     # local app
     'sgv.apps.SgvConfig',
+    'common',
 ]
 
 MIDDLEWARE = [
