@@ -19,7 +19,7 @@ def read_data(table_name):
         data = list(reader)
     return
 
-def footer(table_name, class_name, bulk_list):
+def open_table(table_name, class_name, bulk_list):
     class_name.objects.bulk_create(bulk_list)
 
     with open(file_dir + f'{table_name}.csv', 'w') as csvfile:
@@ -40,6 +40,6 @@ def add_movies(request):
             description=row[3]
         ))
 
-    footer('movies', Movie, arr)
+    open_table('movies', Movie, arr)
     return HttpResponse('Movie table updated')
             
