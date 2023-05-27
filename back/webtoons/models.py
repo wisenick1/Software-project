@@ -10,7 +10,7 @@ class Webtoon(models.Model):
     genre = models.TextField()
     description = models.TextField()
     thumbnail = models.TextField()
-    item_id = models.TextField()
+    item_id = models.DecimalField()
 
     class Meta:
         db_table = 'webtoons'
