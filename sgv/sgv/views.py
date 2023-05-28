@@ -20,79 +20,55 @@ def preference(request):
     # else:
     #     return redirect('common:login')
     visit = request.user.visit
-    movie1 = Movie(
+    Movie.objects.create(
         id=1,
         title="영화1",
         genre="드라마",
         poster_path="https://image.tmdb.org/t/p/w500/xoqr4dMbRJnzuhsWDF3XNHQwJ9x.jpg"
     )
-    movie2 = Movie(
+    Movie.objects.create(
         id=2,
         title="영화2",
         genre="액션",
         poster_path="https://image.tmdb.org/t/p/w500/xoqr4dMbRJnzuhsWDF3XNHQwJ9x.jpg"
     )
-    movie3 = Movie(
+    Movie.objects.create(
         id=3,
         title="영화3",
         genre="드라마",
         poster_path="https://image.tmdb.org/t/p/w500/xoqr4dMbRJnzuhsWDF3XNHQwJ9x.jpg"
     )
-    movie4 = Movie(
+    Movie.objects.create(
         id=4,
         title="영화4",
         genre="액션",
         poster_path="https://image.tmdb.org/t/p/w500/xoqr4dMbRJnzuhsWDF3XNHQwJ9x.jpg"
     )
-    movie5 = Movie(
+    Movie.objects.create(
         id=5,
         title="영화5",
         genre="드라마",
         poster_path="https://image.tmdb.org/t/p/w500/xoqr4dMbRJnzuhsWDF3XNHQwJ9x.jpg"
     )
-    movie6 = Movie(
+    Movie.objects.create(
         id=6,
         title="영화6",
         genre="액션",
         poster_path="https://image.tmdb.org/t/p/w500/xoqr4dMbRJnzuhsWDF3XNHQwJ9x.jpg"
     )
-    movie7 = Movie(
+    Movie.objects.create(
         id=7,
         title="영화7",
         genre="드라마",
         poster_path="https://image.tmdb.org/t/p/w500/xoqr4dMbRJnzuhsWDF3XNHQwJ9x.jpg"
     )
-    movie8 = Movie(
+    Movie.objects.create(
         id=8,
         title="영화8",
         genre="액션",
         poster_path="https://image.tmdb.org/t/p/w500/xoqr4dMbRJnzuhsWDF3XNHQwJ9x.jpg"
     )
-    movie9 = Movie(
-        id=9,
-        title="영화9",
-        genre="액션",
-        poster_path="https://image.tmdb.org/t/p/w500/xoqr4dMbRJnzuhsWDF3XNHQwJ9x.jpg"
-    )
-    movie10 = Movie(
-        id=10,
-        title="영화10",
-        genre="액션",
-        poster_path="https://image.tmdb.org/t/p/w500/xoqr4dMbRJnzuhsWDF3XNHQwJ9x.jpg"
-    )
-    movie11 = Movie(
-        id=11,
-        title="영화11",
-        genre="액션",
-        poster_path="https://image.tmdb.org/t/p/w500/xoqr4dMbRJnzuhsWDF3XNHQwJ9x.jpg"
-    )
-    movie12 = Movie(
-        id=12,
-        title="영화12",
-        genre="액션",
-        poster_path="https://image.tmdb.org/t/p/w500/xoqr4dMbRJnzuhsWDF3XNHQwJ9x.jpg"
-    )
-    movies = [movie1, movie2, movie3, movie4, movie5, movie6, movie7, movie8, movie9, movie10, movie11]
+    movies = Movie.objects.all()
     visit = False
     if visit:
         # 추천 페이지로 바로 진행
@@ -112,9 +88,34 @@ def toggle_movie(request, movie_id):
     try:
         movie = Movie.objects.get(id=movie_id)
         movie.choice = not movie.choice
-        print("True")
         movie.save()
-        return JsonResponse({'success': True})
+        print(movie.title)
+        print(movie.choice)
+        return JsonResponse({'success': True, 'choice': movie.choice})
     except Movie.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Movie not found'})
+@csrf_exempt
+def toggle_choice(request, movie_id):
+    movie = Movie.objects.get(id=movie_id)
+    print(movie.id)
+    movie.choice = not movie.choice
+    print(movie.choice)
+    movie.save()
+    return redirect('sgv:preference')
 
+@csrf_exempt
+def update_movie_choice(request):
+    if request.method == "POST" and request.is_ajax():
+        movie_id = request.POST.get("movie_id")
+        movie_choice = request.POST.get("movie_choice")
+        print(movie_choice)
+        try:
+            movie = Movie.objects.get(id=movie_id)
+            movie.choice = not movie_choice
+            print(movie.choice)
+            movie.save()
+            return JsonResponse({"success": True})
+        except Movie.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Movie not found"})
+
+    return JsonResponse({"success": False, "error": "Invalid request"})
