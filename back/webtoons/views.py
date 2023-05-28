@@ -7,10 +7,10 @@ import csv
 from django.shortcuts import render
 from django.http import HttpResponse
 
-from .models import Movie
+from .models import Webtoon
 
 data = None
-file_dir = 'movie_csv_file_directory'
+file_dir = 'webtoon_csv_file_directory'
 
 def read_data(table_name):
     with open(file_dir + f'{table_name}.csv', 'r') as csvfile:
@@ -26,20 +26,23 @@ def open_table(table_name, class_name, bulk_list):
         writer = csv.writer(csvfile)
     return
 
-def add_movies(request):
-    read_data('movies')
+def add_webtoons(request):
+    read_data('webtoons')
     if not data:
         return HttpResponse('Nothing to update')
 
     arr = []
     for row in data:
-        arr.append(Movie(
+        arr.append(Webtoon(
             item_name=row[0],
-            genre1=row[1],
-            genre2=row[2],
-            description=row[3]
+            story_author=row[1],
+            image_author=row[2],
+            type=row[3],
+            genre=row[4],
+            description=row[5],
+            thumbnail=row[6],
+            item_id=row[7]
         ))
 
-    open_table('movies', Movie, arr)
-    return HttpResponse('Movie table updated')
-            
+    open_table('webtoons', Webtoon, arr)
+    return HttpResponse('Webtoon table updated')
