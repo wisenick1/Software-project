@@ -1,5 +1,6 @@
 from django.shortcuts import render
 
+
 # Create your views here.
 
 import csv
@@ -11,6 +12,7 @@ from .models import Movie
 
 data = None
 file_dir = 'movie_csv_file_directory'
+
 
 def read_data(table_name):
     with open(file_dir + f'{table_name}.csv', 'r') as csvfile:
