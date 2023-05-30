@@ -44,4 +44,12 @@ def add_movies(request):
 
     open_table('movies', Movie, arr)
     return HttpResponse('Movie table updated')
-            
+
+###영화 추천 알고리즘
+import pandas as pd
+import numpy as np
+import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import KMeans
+
+
