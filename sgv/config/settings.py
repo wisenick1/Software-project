@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # local app
+    # 'common.apps.CommonConfig',
     'sgv.apps.SgvConfig',
     'common',
 ]

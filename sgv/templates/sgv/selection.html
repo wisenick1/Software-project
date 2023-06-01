@@ -99,12 +99,12 @@
     </div>
   </section>
 
-<div class="background-banners">
+<div class="background-banner">
     <div class="container">
       <div class="row row-cols-1 row-cols-sm-3 row-cols-md-4 g-3">
         {% csrf_token %}
         {% for movie in movies %}
-        <div class="col">
+        <div class="col" id="movie-{{ movie.id }}">
           <div class="card shadow-sm">
             <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>
               <image href="{{movie.poster_path}}" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" />
@@ -113,12 +113,16 @@
               <p class="card-text text-center text-light"><strong>{{ movie.title }}</strong></p>
               <div class="d-flex justify-content-center align-items-center">
                 <div class="btn-group">
-                   {% csrf_token %}
+                  <form id="toggle-form" action="{% url 'sgv:preference_choice' %}#movie-{{ movie.id }}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="movie_id" value="{{ movie.id }}">
+                    <input type="submit" value="{% if movie.choice %}Unselect{% else %}Select{% endif %}">
                     {% if movie.choice %}
-                    <button type="button" class="btn btn-sm btn-outline-secondary text-light" onclick="toggleChoice({{ movie.id }})">해제</button>
+                    <button type="button" class="btn btn-sm btn-outline-secondary text-light" >해제</button>
                     {% else %}
-                    <button type="button" class="btn btn-sm btn-outline-secondary text-light" onclick="toggleChoice({{ movie.id }})">선택</button>
+                    <button type="button" class="btn btn-sm btn-secondary text-light">선택</button>
                     {% endif %}
+                  </form>
                 </div>
               </div>
             </div>
@@ -133,42 +137,23 @@
 </main>
 
 <script>
-     function toggleChoice(movieId) {
-        var xhr = new XMLHttpRequest();
-        xhr.onreadystatechange = function() {
-            if (xhr.readyState === XMLHttpRequest.DONE) {
-                if (xhr.status === 200) {
-                    var response = JSON.parse(xhr.responseText);
-                    if (response.success) {
-                        var button = document.getElementById('button-' + movieId);
-                        button.textContent = response.choice ? '해제' : '선택';
-                    }
-                } else {
-                    // 요청이 실패하거나 오류가 발생한 경우의 동작
-                }
-            }
-        };
-        xhr.open("POST", "/sgv/preference/toggle-movie/" + movieId + "/", true);
-        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken')); // CSRF 토큰을 요청 헤더에 추가
-        xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhr.send();
-    }
-
-    // CSRF 토큰을 얻기 위한 함수
-    function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie !== '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = cookies[i].trim();
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
+  // window.onload = function() {
+  //       var scrollPosition = localStorage.getItem('scrollPosition');
+  //       if (scrollPosition) {
+  //           var element = document.getElementById(scrollPosition);
+  //           if (element) {
+  //               var rect = element.getBoundingClientRect();
+  //               var topOffset = rect.top + window.pageYOffset;
+  //               window.scrollTo(0, topOffset);
+  //           }
+  //           localStorage.removeItem('scrollPosition');
+  //       }
+  //   };
+  //
+  //   // 스크롤 위치 저장
+  //   function saveScrollPosition(elementId) {
+  //       localStorage.setItem('scrollPosition', elementId);
+  //   }
 
 </script>
 

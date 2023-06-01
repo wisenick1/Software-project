@@ -3,6 +3,8 @@
 import os
 import sys
 
+#from sgv.sgv.models import Movie
+
 
 def main():
     """Run administrative tasks."""
