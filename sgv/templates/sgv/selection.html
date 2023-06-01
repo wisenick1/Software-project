@@ -113,14 +113,14 @@
               <p class="card-text text-center text-light"><strong>{{ movie.title }}</strong></p>
               <div class="d-flex justify-content-center align-items-center">
                 <div class="btn-group">
-                  <form id="toggle-form" action="{% url 'sgv:preference_choice' %}#movie-{{ movie.id }}" method="post">
+                  <form id="toggle-form" action="{% url 'sgv:preference' %}" method="post">
                     {% csrf_token %}
-                    <input type="hidden" name="movie_id" value="{{ movie.id }}">
-                    <input type="submit" value="{% if movie.choice %}Unselect{% else %}Select{% endif %}">
                     {% if movie.choice %}
                     <button type="button" class="btn btn-sm btn-outline-secondary text-light" >해제</button>
+                    <button onclick="toggleChoice({{ movie.id }})">해제</button>
                     {% else %}
                     <button type="button" class="btn btn-sm btn-secondary text-light">선택</button>
+                    <button onclick="toggleChoice({{ movie.id }})">선택</button>
                     {% endif %}
                   </form>
                 </div>
@@ -137,6 +137,67 @@
 </main>
 
 <script>
+  // 스크롤 위치 저장
+  function saveScrollPosition() {
+    sessionStorage.setItem('scrollPosition', window.scrollY);
+  }
+
+  // 스크롤 위치 복원
+  function restoreScrollPosition() {
+    const scrollPosition = sessionStorage.getItem('scrollPosition');
+    if (scrollPosition) {
+      window.scrollTo(0, scrollPosition);
+      sessionStorage.removeItem('scrollPosition');
+    }
+  }
+
+  function toggleChoice(movieId) {
+    saveScrollPosition();  // 스크롤 위치 저장
+
+    fetch('/sgv/preference/' + movieId + '/toggle_choice/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}'
+      },
+    })
+    .then(response => response.json())
+    .then(data => {
+      if (data.success) {
+        // Choice 값 업데이트 후 리다이렉트
+        window.location.href = '/sgv/preference';  // 리다이렉트할 URL로 변경해야 합니다.
+      } else {
+        alert('Failed to toggle choice.');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('An error occurred.');
+    });
+  }
+
+  // 스크롤 위치 복원
+  restoreScrollPosition();
+
+  // // 페이지 로드 시 저장된 스크롤 위치로 스크롤합니다.
+  //     window.onload = function() {
+  //       var scrollPosition = sessionStorage.getItem('scrollPosition');
+  //       if (scrollPosition) {
+  //         window.scrollTo(0, scrollPosition);
+  //         sessionStorage.removeItem('scrollPosition');  // 스크롤 위치를 사용한 후에는 세션 스토리지에서 삭제합니다.
+  //       }
+  //     }
+  //
+  //     // 폼 서밋 시 스크롤 위치를 세션 스토리지에 저장합니다.
+  //     function updateValue(event) {
+  //       event.preventDefault();  // 기본 동작(페이지 이동)을 막습니다.
+  //
+  //       var scrollTop = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop;
+  //       sessionStorage.setItem('scrollPosition', scrollTop);  // 스크롤 위치를 세션 스토리지에 저장합니다.
+  //
+  //       event.target.closest('form').submit();  // 폼을 서밋합니다.
+  //     }
+
   // window.onload = function() {
   //       var scrollPosition = localStorage.getItem('scrollPosition');
   //       if (scrollPosition) {

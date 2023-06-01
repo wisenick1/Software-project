@@ -33,23 +33,15 @@ def preference(request):
         request.user.save()
         return render(request, 'sgv/selection.html', {'movies': movies})
 
-
-def preference_choice(request):
-    movie_id = request.POST.get('movie_id')
-    movie = Movie.objects.get(id=movie_id)
-    movie.choice = not movie.choice
-    movie.save()
-    return redirect('sgv:preference')
-
+@csrf_exempt
+def toggle_choice(request, movie_id):
+    try:
+        movie = Movie.objects.get(id=movie_id)
+        movie.choice = not movie.choice
+        movie.save()
+        return JsonResponse({'success': True})
+    except Movie.DoesNotExist:
+        return JsonResponse({'success': False})
 
 def recommend(request):
     return render(request, 'sgv/recommend.html')
-
-
-@csrf_exempt
-def update_choice(request, movie_id):
-    movie = Movie.objects.get(id=movie_id)
-    movie.choice = not movie.choice
-    movie.save()
-    return redirect('{}#movie_{}'.format(
-        resolve_url('sgv:preference', movie_id=movie.id), ), movie.id)
