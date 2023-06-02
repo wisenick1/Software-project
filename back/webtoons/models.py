@@ -14,4 +14,4 @@ class Webtoon(models.Model):
     item_id = models.DecimalField()
 
     class Meta:
-        db_table = 'webtoons'
+        db_table = 'webtoon'
