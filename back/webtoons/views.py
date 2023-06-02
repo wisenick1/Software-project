@@ -26,8 +26,8 @@ def open_table(table_name, class_name, bulk_list):
         writer = csv.writer(csvfile)
     return
 
-def add_webtoons(request):
-    read_data('webtoons')
+def add_webtoon(request):
+    read_data('webtoon')
     if not data:
         return HttpResponse('Nothing to update')
 
@@ -44,5 +44,5 @@ def add_webtoons(request):
             item_id=row[7]
         ))
 
-    open_table('webtoons', Webtoon, arr)
+    open_table('webtoon', Webtoon, arr)
     return HttpResponse('Webtoon table updated')
