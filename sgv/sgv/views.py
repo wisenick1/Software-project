@@ -13,23 +13,24 @@ def index(request):
     return HttpResponse("안녕하세요 pybo에 오신것을 환영합니다.")
 
 
-# @login_required(login_url='/common/login/')
-def preference(request):
-    # 유저가 로그인했는지 확인
-    # if request.user.is_authenticated:
-    #     visit = request.user.visit
-    # else:
-    #     return redirect('common:login')
-    visit = request.user.visit
+# Movie값 초기화
+def set_all_Movie(movies):
+    for movie in movies:
+        movie.choice =False
+        movie.save()
 
+#@login_required(login_url='/common/login/')
+def preference(request):
+    #visit = request.user.visit
     movies = Movie.objects.all()
     visit = False
     if visit:
-        # 추천 페이지로 바로 진행
-        return redirect('sgv:preference')
+        # 추천 페이지로 바로 진행 현재는 예시
+        return redirect('common:login')
     else:
-        # print(visit)
-        request.user.visit = False
+        #set_all_Movie(movies)
+        # visit값을 선호도 조사가 끝나는 form에서 변화하게끔 변화
+        request.user.visit = True
         request.user.save()
         return render(request, 'sgv/selection.html', {'movies': movies})
 
@@ -44,4 +45,5 @@ def toggle_choice(request, movie_id):
         return JsonResponse({'success': False})
 
 def recommend(request):
+    print("들어옴")
     return render(request, 'sgv/recommend.html')

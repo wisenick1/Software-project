@@ -8,5 +8,5 @@ urlpatterns = [
     path('', views.index),
     path('preference/', views.preference, name='preference'),
     path('preference/<int:movie_id>/toggle_choice/', views.toggle_choice, name='toggle_choice'),
-    path('recommend/', views.preference, name='recommend'),
+    path('recommend/', views.recommend, name='recommend'),
 ]
