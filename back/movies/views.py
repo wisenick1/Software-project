@@ -51,7 +51,8 @@ import numpy as np
 import re
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
-
+from .models import Movie
+from webtoons.models import Webtoon
 
 def preprocess_text(text):
     # 텍스트 전처리 함수: 소문자 변환, 특수 문자 제거 등
@@ -63,10 +64,9 @@ def analyze_webtoon_genre(webtoon_descriptions):
     file = open('stopword.txt', 'r', encoding='utf-8')
     stop_words = file.read().splitlines()
     
-    print(webtoon_descriptions)
     # 텍스트 전처리
     preprocessed_descriptions = [preprocess_text(desc) for desc in webtoon_descriptions]
-    print('fin')
+    
     # TF-IDF 벡터화 객체를 생성합니다.
     vectorizer = TfidfVectorizer(stop_words=stop_words)
     
@@ -85,17 +85,54 @@ def analyze_webtoon_genre(webtoon_descriptions):
 def recommend(movie1, movie2, movie3, movie1_p = 10, movie2_p = 10, movie3_p = 10):
     webtoon_count = 10 # 추천할 웹툰 수
     movie_count = 3 # 선호하는 영화 수
-    data = pd.read_csv('webtoon_articles.csv') # db에서 웹툰 가져오기
-     
-    mdata = pd.read_excel('영화.xlsx', engine='openpyxl') # db에서 영화 가져오기
+    
+    # data = pd.read_csv('webtoon_articles.csv') # db에서 웹툰 가져오기
+    web = Webtoon.objects.all()
+
+    # Django 쿼리셋을 리스트로 변환
+    web_list = list(web)
+
+    # 쿼리셋의 각 인스턴스에서 필드 값을 추출하여 딕셔너리로 저장
+    data_web = {
+        'user': [w.user for w in web_list],
+        'item_name': [w.item_name for w in web_list],
+        'story_author': [w.story_author for w in web_list],
+        'image_author': [w.image_author for w in web_list],
+        'type': [w.type for w in web_list],
+        'genre': [w.genre for w in web_list],
+        'description': [w.description for w in web_list],
+        'thumbnail': [w.thumbnail for w in web_list],
+        'item_id': [w.item_id for w in web_list]
+    }
+
+    # 딕셔너리를 Pandas DataFrame으로 변환
+    data = pd.DataFrame(data_web)
+    
+    # mdata = pd.read_csv('movie.csv') # db에서 영화 가져오기
+    mov = Movie.objects.all()
+
+    # Django 쿼리셋을 리스트로 변환
+    mov_list = list(mov)
+
+    # 쿼리셋의 각 인스턴스에서 필드 값을 추출하여 딕셔너리로 저장
+    data_mov = {
+        'user': [m.user for m in mov_list],
+        'item_name': [m.item_name for m in mov_list],
+        'genre': [m.genre1 for m in mov_list],
+        'genre2': [m.genre2 for m in mov_list],
+        'description': [m.description for m in mov_list]
+    }
+
+    # 딕셔너리를 Pandas DataFrame으로 변환
+    data = pd.DataFrame(data_web)
+    mdata = pd.DataFrame(data_mov)
+    
     wdata = data[['item_name', 'genre', 'description']]
     wdata['check'] = 'w'
     mdata['check'] = 'm'
     wdata['genre2'] = ''
+    fdata = pd.concat([mdata, wdata])
 
-    movie_data = pd.DataFrame(mdata)
-    fdata = pd.concat([movie_data, wdata])
-    print(fdata)
     # Description으로 장르 분석
     webtoon_descriptions = fdata['description']
     genre_labels = analyze_webtoon_genre(webtoon_descriptions)
