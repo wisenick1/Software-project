@@ -28,10 +28,8 @@ def preference(request):
         # 추천 페이지로 바로 진행 현재는 예시
         return redirect('common:login')
     else:
-        #set_all_Movie(movies)
+        set_all_Movie(movies)
         # visit값을 선호도 조사가 끝나는 form에서 변화하게끔 변화
-        request.user.visit = True
-        request.user.save()
         return render(request, 'sgv/selection.html', {'movies': movies})
 
 @csrf_exempt
@@ -45,5 +43,15 @@ def toggle_choice(request, movie_id):
         return JsonResponse({'success': False})
 
 def recommend(request):
-    print("들어옴")
+
+    #알고리즘 돌리는 부분
+    #유저 선호도 가져오고, 이거를 매개변수로 넣으면 알고리즘 돌아가고 webtoon 리턴
+    #웹툰 값으로 렌더링
+    
+    # 최초방문자의 경우 visit값이 False일거라서 Truue
+    if request.user.visit:
+       print("방문")
+    else:
+        request.user.visit = True
+        request.user.save()
     return render(request, 'sgv/recommend.html')
