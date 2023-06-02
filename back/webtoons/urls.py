@@ -1,6 +1,6 @@
 from django.urls import path
-from .view import add_webtoon
+from .views import add_webtoon
 
 urlpatterns = [
-        path('movie/', add_webtoons)
+        path('movie/', add_webtoon)
 ]
