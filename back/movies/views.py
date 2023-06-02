@@ -53,3 +53,105 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import KMeans
 
 
+def preprocess_text(text):
+    # 텍스트 전처리 함수: 소문자 변환, 특수 문자 제거 등
+    text = text.lower()  # 소문자 변환
+    text = re.sub(r'[^가-힣\s]', '', text)  # 특수 문자 제거
+    return text
+
+def analyze_webtoon_genre(webtoon_descriptions):
+    file = open('stopword.txt', 'r', encoding='utf-8')
+    stop_words = file.read().splitlines()
+    
+    print(webtoon_descriptions)
+    # 텍스트 전처리
+    preprocessed_descriptions = [preprocess_text(desc) for desc in webtoon_descriptions]
+    print('fin')
+    # TF-IDF 벡터화 객체를 생성합니다.
+    vectorizer = TfidfVectorizer(stop_words=stop_words)
+    
+    # 웹툰 설명을 벡터화합니다.
+    X = vectorizer.fit_transform(webtoon_descriptions)
+    
+    # K-means 클러스터링을 수행합니다.
+    kmeans = KMeans(n_clusters = 25)  # 장르를 n개로 클러스터링하도록 설정합니다.
+    kmeans.fit(X)
+    
+    # 각 웹툰에 대한 클러스터 할당 결과를 가져옵니다.
+    labels = kmeans.labels_
+    
+    return labels
+
+def recommend(movie1, movie2, movie3, movie1_p = 10, movie2_p = 10, movie3_p = 10):
+    webtoon_count = 10 # 추천할 웹툰 수
+    movie_count = 3 # 선호하는 영화 수
+    data = pd.read_csv('webtoon_articles.csv') # db에서 웹툰 가져오기
+     
+    mdata = pd.read_excel('영화.xlsx', engine='openpyxl') # db에서 영화 가져오기
+    wdata = data[['item_name', 'genre', 'description']]
+    wdata['check'] = 'w'
+    mdata['check'] = 'm'
+    wdata['genre2'] = ''
+
+    movie_data = pd.DataFrame(mdata)
+    fdata = pd.concat([movie_data, wdata])
+    print(fdata)
+    # Description으로 장르 분석
+    webtoon_descriptions = fdata['description']
+    genre_labels = analyze_webtoon_genre(webtoon_descriptions)
+    fdata['descriptionPoint'] = genre_labels
+
+    # 원-핫 인코딩
+    incoded = pd.get_dummies(fdata, columns = ['descriptionPoint'])
+
+    # genre1에 대한 원-핫 인코딩
+    oneHot_genre1 = pd.get_dummies(fdata['genre'])
+
+    # genre2를 genre1의 값으로 대체하여 원-핫 인코딩
+    fdata['genre2'] = fdata['genre'].where(fdata['genre2'] == '', fdata['genre2'])
+    oneHot_genre2 = pd.get_dummies(fdata['genre2'].apply(lambda x:x))
+
+    # 영화 장르1, 장르2 백터 합치기
+    for i in range(len(movie_data)):
+        movie_oneHot = oneHot_genre1 + oneHot_genre2
+    movie_oneHot = movie_oneHot/2
+
+    # 원-핫 인코딩된 장르와 줄거리 concat
+    oneHotIncoded = pd.concat([incoded, movie_oneHot], axis=1)
+
+    # 영화 웹툰 분리
+    groups = oneHotIncoded.groupby(oneHotIncoded.check)
+    movie = groups.get_group("m")
+    webtoon = groups.get_group("w")
+
+    # 백터 생성
+    userMovie = np.zeros(len(movie.columns) - 5, dtype = float)
+
+    # movie 입력 형식에 따라 수정, 현재는 index
+    userMovie = userMovie + movie1_p*movie.iloc[int(movie1), 5:].values
+    userMovie = userMovie + movie2_p*movie.iloc[int(movie2), 5:].values
+    userMovie = userMovie + movie3_p*movie.iloc[int(movie3), 5:].values
+
+    cosSim = pd.DataFrame([0])
+
+    for i in range(len(webtoon)):
+        # 벡터를 NumPy 배열로 변환
+        vector1 = np.array(userMovie)
+        vector2 = np.array(webtoon.iloc[i, 5:].values)
+
+        # 내적 계산
+        dot_product = np.dot(vector1, vector2)
+
+        # 각 벡터의 크기 계산
+        magnitude1 = np.linalg.norm(vector1)
+        magnitude2 = np.linalg.norm(vector2)
+
+        # 코사인 유사도 계산
+        cosine_similarity = dot_product / (magnitude1 * magnitude2)
+        cosSim.loc[i] = [cosine_similarity]
+
+    # 코사인 유사도에 따라 웹툰 인덱스와 코사인 유사도 값 저장
+    top_values = cosSim[0].nlargest(webtoon_count)
+
+    # array형식으로 이름 return
+    return webtoon['item_name'][top_values.index].values
