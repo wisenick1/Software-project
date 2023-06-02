@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import User
 # Create your models here.
 
 class Movie(models.Model):
@@ -10,4 +10,4 @@ class Movie(models.Model):
     description = models.TextField()
 
     class Meta:
-        db_table = 'movies'
+        db_table = 'movie'
