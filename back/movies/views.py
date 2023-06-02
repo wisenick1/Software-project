@@ -28,8 +28,8 @@ def open_table(table_name, class_name, bulk_list):
         writer = csv.writer(csvfile)
     return
 
-def add_movies(request):
-    read_data('movies')
+def add_movie(request):
+    read_data('movie')
     if not data:
         return HttpResponse('Nothing to update')
 
@@ -42,7 +42,7 @@ def add_movies(request):
             description=row[3]
         ))
 
-    open_table('movies', Movie, arr)
+    open_table('movie', Movie, arr)
     return HttpResponse('Movie table updated')
 
 ###영화 추천 알고리즘
