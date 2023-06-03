@@ -11,7 +11,7 @@ from django.http import HttpResponse
 from .models import Movie
 
 data = None
-file_dir = 'movie_csv_file_directory'
+file_dir = './'
 
 
 def read_data(table_name):
