@@ -10,7 +10,7 @@ from django.http import HttpResponse
 from .models import Webtoon
 
 data = None
-file_dir = 'webtoon_csv_file_directory'
+file_dir = './'
 
 def read_data(table_name):
     with open(file_dir + f'{table_name}.csv', 'r') as csvfile:
