@@ -5,17 +5,17 @@ from django.shortcuts import render
 
 import csv
 
+
 from django.shortcuts import render
 from django.http import HttpResponse
-
+from django.contrib.auth.decorators import login_required
 from .models import Movie
 
 data = None
 file_dir = './'
 
-
 def read_data(table_name):
-    with open(file_dir + f'{table_name}.csv', 'r') as csvfile:
+    with open(file_dir + f'{table_name}.csv', 'r', newline='', encoding='utf-8') as csvfile:
         reader = csv.reader(csvfile)
         global data
         data = list(reader)
@@ -24,10 +24,13 @@ def read_data(table_name):
 def open_table(table_name, class_name, bulk_list):
     class_name.objects.bulk_create(bulk_list)
 
-    with open(file_dir + f'{table_name}.csv', 'w') as csvfile:
+    with open(file_dir + f'{table_name}.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
+        for item in bulk_lis:
+            writer.writerow([item.item_name, item.genre1, item.genre2, item.description])
     return
 
+@login_required
 def add_movie(request):
     read_data('movie')
     if not data:
@@ -36,6 +39,7 @@ def add_movie(request):
     arr = []
     for row in data:
         arr.append(Movie(
+            user=request.user,
             item_name=row[0],
             genre1=row[1],
             genre2=row[2],
