@@ -1,17 +1,35 @@
+# -- web --
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, redirect, get_object_or_404, resolve_url
 from common.models import CustomUser
 from django.contrib.auth.decorators import login_required
-from .models import Movie
 from django.views.decorators.csrf import csrf_exempt
+# -- algo --
+import csv
+import re
+from .models import Movie
+
+
+def movie_save():
+    file_path = 'static/movie.csv'
+    movies = []
+    with open(file_path, 'r', encoding='utf-8') as csv_file:
+        reader = csv.DictReader(csv_file)
+        for row in reader:
+            movie = Movie()
+            print(row['item_name'])
+            movie.item_name = row['item_name']
+            movie.genre1 = row['genre1']
+            movie.genre2 = row['genre2']
+            movie.description = row['description']
+            movie.image_url = row['image_url']
+            movies.append(movie)
+    Movie.objects.bulk_create(movies)
 
 
 # 임시 맵핑
-
-
 def index(request):
     return HttpResponse("안녕하세요 pybo에 오신것을 환영합니다.")
-
 
 # Movie값 초기화
 def set_all_Movie(movies):
@@ -22,6 +40,7 @@ def set_all_Movie(movies):
 #@login_required(login_url='/common/login/')
 def preference(request):
     #visit = request.user.visit
+    movie_save()
     movies = Movie.objects.all()
     visit = False
     if visit:
@@ -55,3 +74,4 @@ def recommend(request):
         request.user.visit = True
         request.user.save()
     return render(request, 'sgv/recommend.html')
+

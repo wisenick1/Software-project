@@ -105,12 +105,10 @@
         {% csrf_token %}
         {% for movie in movies %}
         <div class="col" id="movie-{{ movie.id }}">
-          <div class="card shadow-sm">
-            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text>
-              <image href="{{movie.poster_path}}" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" />
-            </svg>
+          <div class="card h-100 shadow-sm">
+              <image src="{{movie.image_url}}" class="card-img-top" style="height: 390px;"/>
             <div class="card-body bg-dark">
-              <p class="card-text text-center text-light"><strong>{{ movie.title }}</strong></p>
+              <p class="card-text text-center text-light"><strong>{{ movie.item_name }}</strong></p>
               <div class="d-flex justify-content-center align-items-center">
                 <div class="btn-group">
                   <form id="toggle-form" action="{% url 'sgv:preference' %}" method="post">
