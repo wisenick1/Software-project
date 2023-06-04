@@ -26,7 +26,7 @@ def open_table(table_name, class_name, bulk_list):
 
     with open(file_dir + f'{table_name}.csv', 'w', newline='') as csvfile:
         writer = csv.writer(csvfile)
-        for item in bulk_lis:
+        for item in bulk_list:
             writer.writerow([item.item_name, item.genre1, item.genre2, item.description])
     return
 
